@@ -446,14 +446,21 @@ Item {
                 }
                 ToolButton {
                     id: discardButton
+                    property real heightScale: 0.1
                     visible: pending && marks !== EventStatus.ReachedServer
                              && marks !== EventStatus.Departed
                     width: visible * implicitWidth
-                    height: visible * implicitHeight
+                    height: visible * implicitHeight * heightScale
                     anchors.top: textField.top
                     anchors.right: parent.right
                     anchors.rightMargin: 2
                     text: qsTr("Discard")
+                    // This button is always visible at the beginning and there is a
+                    // chance that the Item#message height will be based on its height.
+                    // But when it gets invisible shortly after in normal circumstances
+                    // it could cause jerky scrolling.
+                    // This is why we delay showing it immediately in full height.
+                    NumberAnimation on heightScale { to: 1.0; duration: settings.fast_animations_duration_ms }
 
                     onClicked: room.discardMessage(eventId)
                 }
